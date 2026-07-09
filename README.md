@@ -48,8 +48,8 @@ until the policy stops changing.
 | Optimal policy agreement | 97 / 100 tiles (remaining 3 are exact value ties) |
 
 <p align="center">
-  <img src="assets/value_iteration_map.png" width="45%" alt="Value Iteration result">
-  <img src="assets/policy_iteration_map.png" width="45%" alt="Policy Iteration result">
+  <img src="value_iteration_map.png" width="45%" alt="Value Iteration result">
+  <img src="policy_iteration_map.png" width="45%" alt="Policy Iteration result">
 </p>
 
 Both algorithms converge to numerically identical value functions, confirming the implementation is correct — Value Iteration and Policy Iteration are guaranteed to find the same optimal policy for a well-posed MDP.
