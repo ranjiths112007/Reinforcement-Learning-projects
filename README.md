@@ -92,3 +92,6 @@ This will train both solvers, print convergence stats, and export `value_iterati
 ## License
 
 MIT — free to use for learning and coursework.
+
+submiting from
+https://forms.gle/z5cx2JNkG5PHUaoR7
