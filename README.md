@@ -1,97 +1,77 @@
-# ❄️ Icy Robot Maze — Value Iteration & Policy Iteration
+# Reinforcement Learning Projects
 
-A from-scratch implementation of a stochastic Grid-World MDP, solved two ways: **vectorized Value Iteration** and **vectorized Policy Iteration** (via exact linear-system solving). Built as a Week 1 Reinforcement Learning assignment.
+A collection of my **Reinforcement Learning coursework and experiments**, focused on understanding how an agent can make decisions in an environment using rewards, value functions, policies, and sequential decision-making.
 
-## Overview
+I built these tasks to understand the algorithms from the inside instead of treating reinforcement learning as a black box.
 
-A robot stands on a 10×10 icy grid. It must reach a **Goal** tile (bottom-right) while avoiding a **Trap** tile (center), but the floor is slippery: any commanded move only succeeds 85% of the time, with a 5% chance of slipping into each of the other three directions.
+## What This Repository Covers
 
-The goal is to compute:
-- A **Value Map** — how good is it to stand on any given tile?
-- An **Action Map** — the safest, fastest direction to move from any tile?
+- **Grid-World MDP** — modelling states, actions, rewards, and stochastic transitions.
+- **Value Iteration** — finding optimal state values using the Bellman optimality equation.
+- **Policy Iteration** — evaluating and improving policies until they converge.
+- **Vectorized Dynamic Programming** — using NumPy operations to avoid unnecessary state-by-state computation.
+- **Soft Actor-Critic (SAC)** — exploring an off-policy actor-critic method for continuous control with the Pendulum environment.
+- **A3C** — studying asynchronous advantage actor-critic ideas with CartPole.
 
-Both are solved using classic Dynamic Programming, without a single simulated episode.
+## The Main Idea
 
-## Environment
+The simplest way I think about RL is:
 
-| Property | Detail |
-|---|---|
-| Grid size | 10 × 10 (100 states) |
-| Actions | Up, Down, Left, Right |
-| Goal | state 99 (bottom-right), reward **+10**, absorbing |
-| Trap | state 55 (center), reward **−10**, absorbing |
-| Step cost | **−0.1** per move |
-| Transition dynamics | 85% intended direction, 5% each unintended direction |
-| Discount factor (γ) | 0.99 |
+> **Take an action → observe what happened → receive a reward → improve the decision.**
 
-## Algorithms
+The coursework helped me connect that idea to actual algorithms such as Value Iteration, Policy Iteration, SAC, and A3C.
 
-**Value Iteration** — repeatedly applies the Bellman optimality update to every state simultaneously using a single `np.tensordot` call (no nested loops), until values stop changing by more than `θ = 1e-8`.
+## Repository Structure
 
-```python
-Q = R + gamma * np.tensordot(P, V, axes=(2, 0))
-V_new = np.max(Q, axis=1)
-```
-
-**Policy Iteration** — alternates between:
-1. **Policy Evaluation**: solving the linear system `(I − γP_π) V = R_π` exactly with `scipy.linalg.solve`
-2. **Policy Improvement**: greedily updating the policy from the freshly solved values
-
-until the policy stops changing.
-
-## Results
-
-| Metric | Value Iteration | Policy Iteration |
-|---|---|---|
-| Converged in | 61 iterations | 4 steps |
-| Value of start state (0) | 6.195 | 6.195 |
-| Optimal policy agreement | 97 / 100 tiles (remaining 3 are exact value ties) |
-
-<p align="center">
-  <img src="value_iteration_map.png" width="45%" alt="Value Iteration result">
-  <img src="policy_iteration_map.png" width="45%" alt="Policy Iteration result">
-</p>
-
-Both algorithms converge to numerically identical value functions, confirming the implementation is correct — Value Iteration and Policy Iteration are guaranteed to find the same optimal policy for a well-posed MDP.
-
-## Getting Started
-
-### Requirements
-```bash
-pip install numpy scipy matplotlib
-```
-
-### Run
-```bash
-python gridworld.py
-```
-
-This will train both solvers, print convergence stats, and export `value_iteration_map.png` and `policy_iteration_map.png` showing the value heatmap with directional policy arrows overlaid.
-
-## Project Structure
-```
-.
-├── gridworld.py    # BeginnerGridWorld class + solvers + plotting
-├── assets/         # exported value/policy map images
+```text
+Reinforcement-Learning-projects/
+├── gridworld.py
+├── assets/
+├── EXP-7_SAC_Pendulum.ipynb
+├── EXP-8_A3C_CartPole.ipynb
 └── README.md
 ```
 
-## Key Implementation Details
+## Environment: Icy Grid World
 
-- **State flattening**: `(row, col) → row * width + col` and back, so the MDP can be represented with flat NumPy arrays instead of 2D coordinate bookkeeping.
-- **Transition tensor `P`**: shape `(100, 4, 100)` — `P[s, a, s']` is the probability of landing in `s'` after taking action `a` in state `s`. Wall collisions keep the robot in place; terminal states are absorbing.
-- **Reward table `R`**: shape `(100, 4)`, precomputed as the expected reward of taking action `a` in state `s` given the transition probabilities.
-- **No nested loops in the hot path**: both the Value Iteration update and the Policy Iteration improvement step use `np.tensordot` to update all 100 states × 4 actions in one vectorized operation.
+The core Grid-World experiment uses a **10×10 stochastic environment** where the robot needs to reach a goal while avoiding a trap. Actions are probabilistic, so the agent has to account for the possibility of slipping into another direction.
 
-## Self-Check
+The implementation compares Value Iteration and Policy Iteration and visualizes the resulting value map and policy.
 
-- ✅ No nested `for` loops inside the Value Iteration state-update block
-- ✅ `solve_policy_iteration` uses `scipy.linalg.solve` for exact policy evaluation
-- ✅ Exports grid plots with directional arrows for both solved value maps
+## Results
 
-## License
+The current Grid-World implementation reports:
 
-MIT — free to use for learning and coursework.
+- Value Iteration: **61 iterations** to converge
+- Policy Iteration: **4 policy-improvement steps**
+- Start-state value: **6.195**
+- Policy agreement: **97 / 100 states**, with the remaining differences caused by value ties
 
-submiting from
-https://forms.gle/z5cx2JNkG5PHUaoR7
+## Tech Stack
+
+**Python · NumPy · SciPy · Matplotlib · Reinforcement Learning · Markov Decision Processes · Dynamic Programming · Actor-Critic Methods**
+
+## Running the Projects
+
+For the Grid-World implementation:
+
+```bash
+pip install numpy scipy matplotlib
+python gridworld.py
+```
+
+The reinforcement-learning notebooks can be opened in **Jupyter Notebook, JupyterLab, or Google Colab**. Their required libraries are listed inside the notebooks.
+
+## What I Learned
+
+The biggest takeaway from these tasks was that RL is not simply about training an agent until it works. The interesting part is understanding **why a policy changes, how rewards propagate through states, and how uncertainty affects decisions**.
+
+These experiments form part of my college coursework and my foundation in reinforcement learning.
+
+## Coursework Submission
+
+Submission link: https://forms.gle/z5cx2JNkG5PHUaoR7
+
+---
+
+Learning reinforcement learning by actually building the algorithms — not just reading about them.
